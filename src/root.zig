@@ -25,6 +25,7 @@ const windows_scales_long: [scale_size][]const u8 = .{
     "Petabytes", "Exabytes",  "Zettabytes", "Yottabytes",
 };
 
+/// Enum defining the available scale formats
 pub const Scale = enum {
     decimal_short,
     decimal_long,
@@ -52,6 +53,7 @@ fn getScales(scale: Scale) [scale_size][]const u8 {
     };
 }
 
+/// Formats a byte size into a human-readable string and writes into a user-provided buffer
 pub fn formatBuf(size: usize, scale: Scale, buffer: []u8) ![]u8 {
     const divisor = getDivisor(scale);
     const scales = getScales(scale);
@@ -65,6 +67,7 @@ pub fn formatBuf(size: usize, scale: Scale, buffer: []u8) ![]u8 {
     return std.fmt.bufPrint(buffer, "{d:.2} {s}", .{ val, scales[i] });
 }
 
+/// Formats a byte size into a human-readable string using an allocator
 pub fn formatAlloc(size: usize, scale: Scale, allocator: std.mem.Allocator) ![]u8 {
     const divisor = getDivisor(scale);
     const scales = getScales(scale);
@@ -78,6 +81,7 @@ pub fn formatAlloc(size: usize, scale: Scale, allocator: std.mem.Allocator) ![]u
     return std.fmt.allocPrint(allocator, "{d:.2} {s}", .{ val, scales[i] });
 }
 
+/// Formats a byte size into a human-readable string and writes it to a generic writer
 pub fn formatWriter(size: usize, scale: Scale, writer: anytype) !void {
     const divisor = getDivisor(scale);
     const scales = getScales(scale);
