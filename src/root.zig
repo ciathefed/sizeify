@@ -82,7 +82,7 @@ pub fn formatAlloc(size: usize, scale: Scale, allocator: std.mem.Allocator) ![]u
 }
 
 /// Formats a byte size into a human-readable string and writes it to a generic writer
-pub fn formatWriter(size: usize, scale: Scale, writer: anytype) !void {
+pub fn formatWriter(size: usize, scale: Scale, writer: *std.Io.Writer) !void {
     const divisor = getDivisor(scale);
     const scales = getScales(scale);
 
@@ -163,11 +163,11 @@ test "formatAlloc" {
 
 test "formatWriter" {
     var buffer: [64]u8 = undefined;
-    var stream = std.io.fixedBufferStream(&buffer);
-    try formatWriter(1500, .decimal_long, stream.writer());
+    var writer = std.Io.Writer.fixed(&buffer);
+    try formatWriter(1500, .decimal_long, &writer);
 
     const expected = "1.50 Kilobytes";
-    const written = stream.getWritten();
+    const written = writer.buffered();
     try testing.expectEqualStrings(expected, written);
 }
 
