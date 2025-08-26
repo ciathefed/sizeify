@@ -38,8 +38,8 @@ exe_mod.addImport("sizeify", sizeify.module("sizeify"));
 ```zig
 const sizeify = @import("sizeify");
 
-const formatted = try sizeify.formatAlloc(1536, .binary_short, allocator);
-// formatted == "1.50 KiB"
+std.log.debug("{f}", .{sizeify.fmt(1536, .binary_short)});
+// debug: 1.50 KiB
 ```
 
 Also available:
