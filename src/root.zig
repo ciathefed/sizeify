@@ -35,6 +35,16 @@ pub const Scale = enum {
     windows_long,
 };
 
+/// Formats the given size using formatWriter
+pub const Formatter = struct {
+    size: usize,
+    scale: Scale,
+
+    pub fn format(self: Formatter, writer: *std.Io.Writer) std.Io.Writer.Error!void {
+        try formatWriter(self.size, self.scale, writer);
+    }
+};
+
 fn getDivisor(scale: Scale) f64 {
     return switch (scale) {
         .decimal_short, .decimal_long => 1000,
@@ -93,6 +103,11 @@ pub fn formatWriter(size: usize, scale: Scale, writer: *std.Io.Writer) !void {
     }
 
     try writer.print("{d:.2} {s}", .{ val, scales[i] });
+}
+
+/// Returns a formatter that formats the given size using formatWriter
+pub fn fmt(size: usize, scale: Scale) Formatter {
+    return Formatter{ .size = size, .scale = scale };
 }
 
 const testing = std.testing;
@@ -167,6 +182,16 @@ test "formatWriter" {
     try formatWriter(1500, .decimal_long, &writer);
 
     const expected = "1.50 Kilobytes";
+    const written = writer.buffered();
+    try testing.expectEqualStrings(expected, written);
+}
+
+test "fmt" {
+    var buffer: [64]u8 = undefined;
+    var writer = std.Io.Writer.fixed(&buffer);
+    try writer.print("{f}", .{fmt(3_360_000, .binary_long)});
+
+    const expected = "3.20 Mebibytes";
     const written = writer.buffered();
     try testing.expectEqualStrings(expected, written);
 }
