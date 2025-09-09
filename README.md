@@ -30,7 +30,7 @@ const sizeify = b.dependency("sizeify", .{
     .target = target,
     .optimize = optimize,
 });
-exe_mod.addImport("sizeify", sizeify.module("sizeify"));
+exe.root_module.addImport("sizeify", sizeify.module("sizeify"));
 ```
 
 ## Usage
